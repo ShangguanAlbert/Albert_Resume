@@ -1,8 +1,9 @@
 services:
   resume:
-    build: .
+    build:
+      context: .
+      args:
+        - BASE_URL=/albert/resume/
     ports:
       - "3719:3719"
-    environment:
-      - BASE_URL=/albert/resume
     restart: unless-stopped
