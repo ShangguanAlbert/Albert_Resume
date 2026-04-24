@@ -1,0 +1,10 @@
+.DS_Store
+node_modules
+dist
+.jekyll-cache
+.jekyll-metadata
+.sass-cache
+.bundle
+vendor
+_site
+*.tsbuildinfo

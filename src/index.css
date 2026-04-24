@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Scroll offset for sticky header */
+.anchor,
+h1[id],
+h2[id],
+h3[id],
+h4[id] {
+  scroll-margin-top: 4rem;
+}

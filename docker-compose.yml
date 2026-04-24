@@ -1,0 +1,6 @@
+services:
+  resume:
+    build: .
+    ports:
+      - "3719:3719"
+    restart: unless-stopped
