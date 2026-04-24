@@ -8,6 +8,7 @@
 - 核心内容以 Markdown 编写（`content/about.md`），构建时解析为 HTML，运行时零开销。
 - 生产访问路径：`https://lotusai.extrotec.com/albert/resume`
 - 机房外部 Nginx 负责 HTTPS、反向代理和缓存，容器内仅运行 `vite preview` 提供静态文件。
+- **当前现网代理会把 `/albert/resume` 前缀剥离后再转发给容器**。因此仓库当前必须按**相对路径**构建，而不是把 `Vite base` 固定为 `/albert/resume/`。
 
 ## 技术栈
 
@@ -108,6 +109,7 @@ npm run dev      # 启动 Vite 开发服务器，HMR 即时刷新
 
 ```bash
 npm run build && npm run preview
+BASE_URL=./ npm run build && BASE_URL=./ npm run preview
 ```
 
 监听 `http://localhost:3719`，与 Docker 端口一致。
@@ -123,15 +125,29 @@ docker compose down            # 停止
 `Dockerfile` 流程：
 1. `node:22-alpine` 基础镜像
 2. `npm ci` 安装依赖
-3. `npm run build`（tsc + vite build）
+3. `npm run build`（tsc + vite build；生产部署时通过 `BASE_URL=./` 构建相对资源路径）
 4. `npm run preview` 启动静态服务（3719 端口）
 
 **不要在容器内加 Nginx**。机房运维已配置外部 Nginx 反代到容器 3719 端口。
+
+### 子路径部署边界
+
+- 浏览器访问路径仍然是 `https://lotusai.extrotec.com/albert/resume/...`
+- 但容器实际收到的是去掉前缀后的路径，如 `/`、`/assets/...`、`/images/...`
+- 因此：
+  - `docker-compose.yml` 中生产构建参数应保持 `BASE_URL=./`
+  - 不要把 `vite.config.ts` 的 `base` 改回 `/albert/resume/`
+  - 不要把站内锚点写成 `/#about-me` 这类根路径；应使用 `#about-me`
+  - 静态资源不要硬编码为 `/albert/resume/...`，应通过相对路径或 `import.meta.env.BASE_URL` 生成
 
 ### 验证
 
 ```bash
 curl -I http://localhost:3719/
+# 预期：HTTP/1.1 200 OK
+
+BASE_URL=./ npm run build && BASE_URL=./ npm run preview
+curl -I http://localhost:3719/albert/resume/
 # 预期：HTTP/1.1 200 OK
 ```
 
@@ -148,6 +164,8 @@ curl -I http://localhost:3719/
 
 - 修改导航 URL 后，必须验证与 `about.md` 标题经 github-slugger 生成的 ID 一致
 - 修改 `author` 字段后检查 `Sidebar.tsx` 中 `socialLinks` 数组是否使用了对应字段
+- 当前导航应保持 `#about-me` 这种页内锚点格式，不要改回 `/#about-me`
+- 当前头像等静态资源应优先使用 `import.meta.env.BASE_URL` 拼接，不要写死根路径 `/images/...`
 
 ### 修改 src/components/ 时
 
@@ -161,6 +179,7 @@ curl -I http://localhost:3719/
 - 保持当前架构：外部 Nginx 代理 + 容器内 `vite preview`
 - 不要改端口（3719）
 - 不要升级 Node 大版本未经验证
+- 如果部署仍依赖当前代理的“剥离 `/albert/resume` 前缀”行为，就不要把构建参数从 `BASE_URL=./` 改回子路径 base
 
 ## 故障排查
 
@@ -189,3 +208,14 @@ curl -I http://localhost:3719/
 1. 先在本地验证 `npm run build` 通过
 2. 检查 `package.json` 和 `package-lock.json` 是否存在且一致
 3. 确认 `node:22-alpine` 镜像可用
+
+### 部署后出现 “The server is configured with a public base URL …”
+
+1. 先检查是否把 `Vite base` 或 `BASE_URL` 配成了 `/albert/resume/`
+2. 如果当前代理仍然会剥离 `/albert/resume` 前缀，则这会导致 `vite preview` 认为收到的请求路径与 public base 不一致
+3. 保持 `docker-compose.yml` 使用 `BASE_URL=./`，重新 `docker compose up -d --build`
+4. 再验证：
+   ```bash
+   curl -I http://localhost:3719/
+   curl -I http://localhost:3719/albert/resume/
+   ```
