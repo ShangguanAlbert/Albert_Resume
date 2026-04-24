@@ -40,6 +40,7 @@ docker compose down
 ```
 
 容器监听 `3719` 端口，使用 `vite preview` 作为服务入口。生产环境由外部 Nginx 反代到该端口。
+当前 `docker-compose.yml` 使用 `BASE_URL=./`，因为现网代理会把 `/albert/resume` 前缀剥离后再转发给容器，前端资源需按相对路径构建。
 
 验证：`curl -I http://localhost:3719/` 应返回 200。
 

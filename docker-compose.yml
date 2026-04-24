@@ -3,7 +3,7 @@ services:
     build:
       context: .
       args:
-        - BASE_URL=/albert/resume/
+        - BASE_URL=./
     ports:
       - "3719:3719"
     restart: unless-stopped

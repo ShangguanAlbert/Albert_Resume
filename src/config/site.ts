@@ -9,7 +9,7 @@ export const siteConfig = {
 
   author: {
     name: "上官福泽\nFuze Shangguan",
-    avatar: "/images/cute_profile.jpeg",
+    avatar: `${import.meta.env.BASE_URL}images/cute_profile.jpeg`,
     bio: "Hangzhou Normal University",
     location: "Hangzhou, China",
     email: "sgfzalbert@163.com",
@@ -23,11 +23,11 @@ export const siteConfig = {
   repository: "ShangguanAlbert/ShangguanAlbert.github.io",
 
   navigation: [
-    { title: "About Me", url: "/#about-me" },
-    { title: "Educations", url: "/#educations" },
-    { title: "Publications", url: "/#selected-publications" },
-    { title: "Academic Services", url: "/#academic-services" },
-    { title: "Honors in Academic", url: "/#honors-in-academic" },
-    { title: "Awards in Robotics", url: "/#awards-in-robotics" },
+    { title: "About Me", url: "#about-me" },
+    { title: "Educations", url: "#educations" },
+    { title: "Publications", url: "#selected-publications" },
+    { title: "Academic Services", url: "#academic-services" },
+    { title: "Honors in Academic", url: "#honors-in-academic" },
+    { title: "Awards in Robotics", url: "#awards-in-robotics" },
   ] as NavigationItem[],
 };

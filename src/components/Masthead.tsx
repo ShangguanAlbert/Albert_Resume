@@ -8,7 +8,7 @@ export default function Masthead() {
     <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
       <div className="max-w-5xl mx-auto px-4">
         <nav className="flex items-center justify-between h-14">
-          <a href="/#about-me" className="text-lg font-semibold text-gray-900 no-underline">
+          <a href="#about-me" className="text-lg font-semibold text-gray-900 no-underline">
             Homepage
           </a>
 
