@@ -4,5 +4,5 @@ services:
     ports:
       - "3719:3719"
     environment:
-      - BASE_URL=/albert/resume/
+      - BASE_URL=/albert/resume
     restart: unless-stopped
